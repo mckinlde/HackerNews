@@ -15,7 +15,8 @@ import mysql.connector
 def retrieve(url: str):
     """retrieves content at the specified url"""
     print("*", url)
-    header = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'}
+    header = {'User-Agent': 'Mozilla/5.0'}
+                            #' (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'}
     r=requests.get(url, headers=header, verify=False, timeout=5)
     sleep(3) ## We really gotta sleep to stay under HN's radar
     soup = BeautifulSoup(r.text, "lxml")
@@ -95,6 +96,5 @@ db.execute("""
 connection.commit()
 
 for k, v in words.items():
-    db.execute("insert into HN_JOBS(word, count) values(?,?)",
-               k, v)
+    db.execute("insert into HN_JOBS(word, count) values(?,?)", [k, v])
     connection.commit()
