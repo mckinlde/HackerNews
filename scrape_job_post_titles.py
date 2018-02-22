@@ -43,17 +43,18 @@ print(get_more(testSoup))
 
 ## Okay, really what I'm interested in is counting the number of times a word appears
 
-def wordCount(string_list: []):
-    wordCount = {}
+def wordCount(string_list: [], currentCount: {}):
     for _ in string_list:
         for word in re.split('\s', _):  # split with whitespace
             try:
-                wordCount[word] += 1
+                currentCount[word] += 1
             except KeyError:
-                wordCount[word] = 1
-    return wordCount
+                currentCount[word] = 1
+    return currentCount
 
 
-print(wordCount(get_titles(testSoup)))
+print(wordCount(get_titles(testSoup), {}))
+
+
 
 
