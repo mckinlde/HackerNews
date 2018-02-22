@@ -94,7 +94,7 @@ db.execute("""
         )""")
 connection.commit()
 
-for _ in words:
+for k, v in words.items():
     db.execute("insert into HN_JOBS(word, count) values(?,?)",
-               _.key, _.value)
+               k, v)
     connection.commit()
