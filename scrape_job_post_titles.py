@@ -15,6 +15,7 @@ def retrieve(url: str):
 
     return soup
 
+
 def get_titles(soup: BeautifulSoup):
     titles = []
     for _ in soup.find_all("a", class_="storylink"):
@@ -24,3 +25,9 @@ def get_titles(soup: BeautifulSoup):
 testSoup = retrieve('https://news.ycombinator.com/jobs')
 print(get_titles(testSoup))
 
+
+def get_more(soup: BeautifulSoup):
+    more = soup.find("a", class_="morelink")
+    return more.get('href')
+
+print(get_more(testSoup))
