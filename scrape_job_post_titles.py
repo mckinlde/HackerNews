@@ -4,6 +4,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 import requests
 import re
+import mysql.connector
 
 ## First the basics, we need to:
 ## - get soup from a url; retrieve()
@@ -16,7 +17,7 @@ def retrieve(url: str):
     print("*", url)
     header = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'}
     r=requests.get(url, headers=header, verify=False, timeout=5)
-    sleep(1)
+    sleep(3) ## We really gotta sleep to stay under HN's radar
     soup = BeautifulSoup(r.text, "lxml")
 
     return soup
@@ -30,12 +31,17 @@ def get_titles(soup: BeautifulSoup):
 
 
 testSoup = retrieve('https://news.ycombinator.com/jobs')
+sleep(1)
 print(get_titles(testSoup))
 
 
 def get_more(soup: BeautifulSoup):
     more = soup.find("a", class_="morelink")
-    return more.get('href')
+    try:
+        link = more.get('href')
+    except AttributeError:
+        return None
+    return link
 
 
 print(get_more(testSoup))
@@ -55,6 +61,40 @@ def wordCount(string_list: [], currentCount: {}):
 
 print(wordCount(get_titles(testSoup), {}))
 
+print('Done Testing')
 
 
+## Rock on, now let's write a loop that'll update our dict for every new page
 
+initial_link = 'https://news.ycombinator.com/jobs'
+soup = retrieve(initial_link)
+sleep(1)
+next_link = get_more(soup)
+words = {}
+pageCounter = 0
+while next_link is not None:
+    newTitles = get_titles(soup)
+    wordCount(newTitles, words)
+    soup = retrieve('https://news.ycombinator.com/' + next_link)
+    next_link = get_more(soup)
+    pageCounter += 1
+    print(pageCounter)
+
+## Okay, at this point I theoretically have a dict of words and their counts
+## HN is blocking my requests so I can't test, but assuming it works I need to put that in
+## a DB for it to be useful
+
+connection = mysql.connector.connect(host="localhost", port=3306, user="semdemo", passwd="demo", db="semdemo")
+db = connection.cursor(prepared=True)
+
+db.execute("""
+        CREATE TABLE IF NOT EXISTS HN_JOBS (
+            word VARCHAR(256) NOT NULL PRIMARY KEY,
+            count int(20) NOT NULL DEFAULT 0
+        )""")
+connection.commit()
+
+for _ in words:
+    db.execute("insert into HN_JOBS(word, count) values(?,?)",
+               _.key, _.value)
+    connection.commit()
