@@ -93,6 +93,8 @@ while next_link is not None:
 connection = mysql.connector.connect(host="localhost", port=3306, user="semdemo", passwd="demo", db="semdemo")
 db = connection.cursor(prepared=True)
 
+
+# TODO: change primary key to be an int index, words 'is' and 'Is' are throwing Duplicate entry errors
 db.execute("""
         CREATE TABLE IF NOT EXISTS HN_JOBS (
             word VARCHAR(256) NOT NULL PRIMARY KEY,
