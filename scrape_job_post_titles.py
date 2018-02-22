@@ -79,7 +79,8 @@ while next_link is not None:
     soup = retrieve('https://news.ycombinator.com/' + next_link)
     next_link = get_more(soup)
     pageCounter += 1
-    print(pageCounter + ', ' + next_link)
+    print(pageCounter)
+    print(', ' + next_link)
 
 ## Okay, at this point I theoretically have a dict of words and their counts
 ## HN is blocking my requests so I can't test, but assuming it works I need to put that in
