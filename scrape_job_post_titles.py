@@ -15,7 +15,8 @@ import mysql.connector
 def retrieve(url: str):
     """retrieves content at the specified url"""
     print("*", url)
-    header = {'User-Agent': 'Mozilla/5.0'}
+    header = {'User-Agent': 'Chrome/47.0.2526.106'}
+                  #'Mozilla/5.0'}
                             #' (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'}
     r=requests.get(url, headers=header, verify=False, timeout=5)
     sleep(3) ## We really gotta sleep to stay under HN's radar
@@ -80,7 +81,10 @@ while next_link is not None:
     next_link = get_more(soup)
     pageCounter += 1
     print(pageCounter)
-    print(', ' + next_link)
+    try:
+        print(', ' + next_link)
+    except TypeError:
+        print('TypeError, next_link is None')
 
 ## Okay, at this point I theoretically have a dict of words and their counts
 ## HN is blocking my requests so I can't test, but assuming it works I need to put that in
